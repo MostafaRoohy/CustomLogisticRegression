@@ -39,13 +39,13 @@ class LogisticRegresssion:
 
     def ProbThisDP(self, featuresDP):
 
-        return (self.Sigmoid(self.ScoreThisDP(self.weights, self.bias, featuresDP)))
+        return (self.Sigmoid(self.ScoreThisDP(featuresDP)))
     #
 
 
     def LogLossThisDP(self, featuresDP, labelDP):
 
-        probThisDP = self.ProbThisDP(self.weights, self.bias, featuresDP)
+        probThisDP = self.ProbThisDP(featuresDP)
 
         return (-labelDP * np.log(probThisDP)   -   -(1-labelDP) * np.log(1-probThisDP))
     #
@@ -57,15 +57,17 @@ class LogisticRegresssion:
 
         for i in range(self.n):
 
-            result += (self.LogLossThisDP(self.weights, self.bias, self.features[i], self.labels[i]))
+            result += (self.LogLossThisDP(self.features[i], self.labels[i]))
         #
+
+        return (result)
     #
 
 
     def fit(self, X, y):
         
-        self.features = X
-        self.labels   = y
+        self.features = X.to_numpy()
+        self.labels   = y.to_numpy()
 
         self.n        = X.shape[0]
         self.k        = X.shape[1]
@@ -90,7 +92,7 @@ class LogisticRegresssion:
 
             for i in range(self.k):
 
-                self.weights[i] += ((self.labels[j] - guessThisDP) * self.features[i] * self.learningRate)
+                self.weights[i] += ((self.labels[j] - guessThisDP) * self.features[j, i] * self.learningRate)
                 self.bias       += ((self.labels[j] - guessThisDP) * self.learningRate)
             #
         #
@@ -99,7 +101,11 @@ class LogisticRegresssion:
 
     def __repr__(self):
         
-        errorsPlot = px.scatter(x=range(self.epochs), y=self.weights)
+        errorsPlot = px.scatter(x=range(self.epochs), y=self.errors)
         errorsPlot.show()
+
+        rep = str("Coefs: " + str(self.weights) + "\nIntercept:" + str(self.bias))
+
+        return (rep)
     #
 #
